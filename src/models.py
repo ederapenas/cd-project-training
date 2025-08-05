@@ -49,3 +49,16 @@ class LinearModel(Model):
         errors = yhat - y
         rmse = 1.0/len(X) * np.square(np.linalg.norm(errors))
         return rmse
+    
+class LogisticModel(Model):
+    def predict(self, X: np.array) -> np.ndarray:
+        return 1/(1 + np.exp(-(X@self.w)))
+    
+    def gradient(self, X: np.array, y: np.array) -> np.ndarray:
+        return X.T@(self.predict(X) - y)
+    
+    def hessian(self, X: np.array, y: np.array) -> np.ndarray:
+        return (X.T@self.predict(X))@X
+    
+    def error(self, X, y):
+        return np.sum(-y * np.log(self.predict(X)) - (1 - y) * np.log(1 - self.predict(X)))
